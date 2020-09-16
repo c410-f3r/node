@@ -3314,8 +3314,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "models"
-version = "0.1.0"
+name = "multimap"
+version = "0.8.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1255076139a83bb467426e7f8d0134968a8118844faa755985e077cf31850333"
 
 [[package]]
 name = "multistream-select"
@@ -6665,8 +6667,32 @@ dependencies = [
 ]
 
 [[package]]
-name = "substrate-poc"
-version = "0.0.1"
+name = "substrate-frame-rpc-system"
+version = "2.0.0-rc6"
+source = "git+https://github.com/paritytech/substrate.git?rev=be8bb186d87b9d2b47a2907c9b51ae1e252362c3#be8bb186d87b9d2b47a2907c9b51ae1e252362c3"
+dependencies = [
+ "frame-system-rpc-runtime-api",
+ "futures 0.3.5",
+ "jsonrpc-core",
+ "jsonrpc-core-client",
+ "jsonrpc-derive",
+ "log",
+ "parity-scale-codec",
+ "sc-client-api",
+ "sc-rpc-api",
+ "serde",
+ "sp-api",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-core",
+ "sp-runtime",
+ "sp-transaction-pool",
+]
+
+[[package]]
+name = "substrate-prometheus-endpoint"
+version = "0.8.0-rc6"
+source = "git+https://github.com/paritytech/substrate.git?rev=be8bb186d87b9d2b47a2907c9b51ae1e252362c3#be8bb186d87b9d2b47a2907c9b51ae1e252362c3"
 dependencies = [
  "async-std",
  "derive_more",

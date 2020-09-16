@@ -1,8 +1,8 @@
 [workspace]
-members = ['runtime', 'models']
-
-[[bin]]
-name = 'node'
-path = 'src/main.rs'
+members = [
+    'node',
+    'pallets/template',
+    'runtime',
+]
 [profile.release]
 panic = 'unwind'

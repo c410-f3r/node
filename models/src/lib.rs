@@ -1,12 +1,24 @@
-//use std::collections::HashMap;
+use std::collections::HashMap;
 use std::fmt;
+use std::iter::Iterator;
 
-type PaymentDetail = (String, Option<i32>);
+pub struct Field {
+    name: String,
+    validator: Box<dyn Fn(&str) -> bool>,
+}
+impl Field {
+    fn new(name: &str, func: Box<dyn Fn(&str) -> bool>) -> Self {
+        Field {
+            name: name.to_string(),
+            validator: func,
+        }
+    }
+}
 
-trait Medium: fmt::Display {
+pub trait Medium: fmt::Display {
     fn asset(&self) -> Asset;
 
-    fn payment_details(&self) -> Vec<PaymentDetail>;
+    fn payment_details(&self) -> Vec<Field>;
 
     fn name(&self) -> String {
         self.to_string()
@@ -19,17 +31,10 @@ trait Medium: fmt::Display {
 
 type Amount = f32;
 
-struct Money<T: Medium>(T, Amount);
+#[derive(Debug, Clone, PartialEq)]
+pub struct Money(Asset, Amount);
 
-struct Actor;
-
-struct DebtBalance<T: Medium> {
-    borrower: Actor,
-    lender: Actor,
-    amount: Money<T>,
-}
-
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Asset {
     Fiat(Fiat),
     Digital(Digital),
@@ -49,8 +54,18 @@ impl Asset {
         self.to_string()
     }
 }
+impl From<Digital> for Asset {
+    fn from(x: Digital) -> Self {
+        Asset::Digital(x)
+    }
+}
+impl From<Fiat> for Asset {
+    fn from(x: Fiat) -> Self {
+        Asset::Fiat(x)
+    }
+}
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Fiat {
     COP,
     VES,
@@ -65,7 +80,7 @@ impl fmt::Display for Fiat {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Digital {
     BTC,
     USDv,
@@ -86,6 +101,85 @@ impl fmt::Display for Digital {
 //    medium: ,
 //
 //}
+pub struct AccountId;
+
+pub struct DebtBalance {
+    borrower: AccountId,
+    lender: AccountId,
+    amount: Money,
+}
+
+///
+pub struct Debt {
+    borrower: AccountId,
+    lender: AccountId,
+    amount_owed: Money,
+    payment_assets: Vec<Asset>,
+    status: DebtStatus,
+    payments: Vec<PaymentFraction>,
+    fees: Vec<Fee>,
+}
+
+impl Debt {
+    fn new() -> Self {
+        Debt {
+            borrower: AccountId,
+            lender: AccountId,
+            amount_owed: Money(Fiat::COP.into(), 0.0),
+            payment_assets: vec![],
+            status: DebtStatus::Approved,
+            payments: vec![],
+            fees: vec![],
+        }
+    }
+
+    fn status(&self) -> DebtStatus {
+        self.status.clone()
+    }
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum DebtStatus {
+    Approved,
+    Active { payed_so_far: Money },
+    Paid,
+}
+
+struct PaymentFraction {
+    amount: Amount,
+    payment_id: PaymentId,
+}
+
+struct PaymentId;
+
+struct Fee {
+    name: String,
+    amount: Amount,
+}
+
+///
+struct Payment<T: Medium> {
+    payer: AccountId,
+    recipient: AccountId,
+    paid_debt: Money,
+    execution_amount: Money,
+    status: PaymentStatus,
+    medium: T,
+    payment_details: HashMap<String, String>,
+}
+
+impl<T: Medium> Payment<T> {
+    fn payment_details(&self) -> impl Iterator<Item = (&String, &String)> {
+        self.payment_details.iter()
+    }
+}
+
+enum PaymentStatus {
+    Created,
+    InProgress,
+    Completed,
+    Cancelled,
+}
 
 #[cfg(test)]
 mod tests {
@@ -115,7 +209,7 @@ mod tests {
             self.asset
         }
 
-        fn payment_details(&self) -> Vec<PaymentDetail> {
+        fn payment_details(&self) -> Vec<Field> {
             vec![]
         }
     }
@@ -125,5 +219,11 @@ mod tests {
         let bancolombia = Bancolombia::new();
 
         assert_eq!(bancolombia.name(), "Bancolombia(COP)");
+    }
+
+    #[test]
+    fn debt() {
+        let debt = Debt::new();
+        assert_eq!(debt.status(), DebtStatus::Approved);
     }
 }
