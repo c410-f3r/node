@@ -2,6 +2,9 @@ use std::collections::HashMap;
 use std::fmt;
 use std::iter::Iterator;
 
+pub use plugin::*;
+mod plugin;
+
 pub struct Field {
     name: String,
     validator: Box<dyn Fn(&str) -> bool>,
