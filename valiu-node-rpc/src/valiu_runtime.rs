@@ -1,4 +1,4 @@
-use crate::Membership;
+use crate::{LiquidityProvider, ProviderMembers};
 use substrate_subxt::{balances::Balances, extrinsic::DefaultExtra, system::System, Runtime};
 use valiu_node_runtime_types::{
     AccountData, AccountId, Address, Balance, BlockNumber, Hash, Hashing, Header, Index,
@@ -12,7 +12,9 @@ impl Balances for ValiuRuntime {
     type Balance = Balance;
 }
 
-impl Membership for ValiuRuntime {}
+impl LiquidityProvider for ValiuRuntime {}
+
+impl ProviderMembers for ValiuRuntime {}
 
 impl Runtime for ValiuRuntime {
     type Extra = DefaultExtra<Self>;

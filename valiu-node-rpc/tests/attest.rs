@@ -2,7 +2,8 @@
 
 use sp_keyring::AccountKeyring;
 use substrate_subxt::{extrinsic::PairSigner, ClientBuilder};
-use valiu_node_rpc::{AddMemberCallExt, ValiuRuntime};
+use valiu_node_commons::{Asset, Collateral};
+use valiu_node_rpc::{AttestCallExt, ValiuRuntime};
 
 #[tokio::test]
 async fn add_member() {
@@ -12,8 +13,10 @@ async fn add_member() {
 
     let client = ClientBuilder::<ValiuRuntime>::new().build().await.unwrap();
 
+    let asset = Asset::Collateral(Collateral::Usdc);
+
     let rslt = client
-        .add_member_and_watch(&signer, AccountKeyring::Bob.to_account_id())
+        .attest_and_watch(&signer, asset, 123, Default::default())
         .await;
 
     assert!(rslt.is_ok());

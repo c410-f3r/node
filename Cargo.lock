@@ -7864,10 +7864,12 @@ dependencies = [
 name = "valiu-node-rpc"
 version = "0.1.0"
 dependencies = [
+ "env_logger",
  "parity-scale-codec",
  "sp-keyring",
  "substrate-subxt",
  "tokio 0.2.24",
+ "valiu-node-commons",
  "valiu-node-runtime-types",
 ]
 
